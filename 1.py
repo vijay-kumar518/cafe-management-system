@@ -17,7 +17,7 @@ def save_file(filename, data):
 
 def add_item():
     menu = load_file(MENU_FILE)
-    item = input("Enter Item Name: ")
+    item = input("Enter Item Name: ").capitalize()
     price = float(input("Enter Price: "))
     menu[item] = price
     save_file(MENU_FILE, menu)
@@ -39,6 +39,9 @@ def take_order():
         print("No items available. Please add items first.\n")
         return
     
+    # It asks for student name
+    student_name = input("Enter Student Name: ").strip().title()     
+
     order = []
     total = 0
     while True:
@@ -58,9 +61,10 @@ def take_order():
         orders = load_file(ORDERS_FILE)
         if not isinstance(orders, list):  # initialize if empty
             orders = []
-        orders.append({"order": order, "total": total})
+        #Saves student name with order
+        orders.append({"student": student_name, "order": order, "total": total})
         save_file(ORDERS_FILE, orders)
-        print(f"\n✅ Order Placed! Total Bill: ₹{total}\n")
+        print(f"\n✅ Order Placed for {student_name}! Total Bill: ₹{total}\n")
 
 def view_orders():
     orders = load_file(ORDERS_FILE)
@@ -69,7 +73,7 @@ def view_orders():
     else:
         print("\n--- All Orders ---")
         for i, o in enumerate(orders, 1):
-            print(f"\nOrder {i}:")
+            print(f"\nOrder {i} - Student: {o.get('student', 'Unknown')}")
             for item in o["order"]:
                 print(f"{item['item']} x {item['qty']} = ₹{item['cost']}")
             print(f"Total: ₹{o['total']}")
@@ -99,4 +103,4 @@ def cafe_menu():
             print("Invalid choice!\n")
 
 # Run Cafe System
-# cafe_menu()
+cafe_menu()
