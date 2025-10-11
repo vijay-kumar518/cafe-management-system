@@ -15,10 +15,42 @@ def save_file(filename, data):
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
 
+# input validation functions
+def get_valid_float(prompt):
+    while True:
+        try:
+            value = float(input(prompt))
+            if value <= 0:
+                print("❌ Please enter a positive number.")
+                continue
+            return value
+        except ValueError:
+            print("❌ Invalid input. Enter a number.")
+
+def get_valid_int(prompt):
+    while True:
+        try:
+            value = int(input(prompt))
+            if value <= 0:
+                print("❌ Please enter a positive integer.")
+                continue
+            return value
+        except ValueError:
+            print("❌ Invalid input. Enter an integer.")
+
 def add_item():
     menu = load_file(MENU_FILE)
-    item = input("Enter Item Name: ").capitalize()
-    price = float(input("Enter Price: "))
+    while True:
+        item = input("Enter Item Name: ").strip().capitalize()
+        if item == "":
+            print("❌ Item name cannot be empty.")
+            continue
+        if item in menu:
+            print("❌ Item already exists in menu.")
+            continue
+        break
+
+    price = get_valid_float("Enter Price: ₹")
     menu[item] = price
     save_file(MENU_FILE, menu)
     print("✅ Item Added Successfully!\n")
@@ -39,8 +71,9 @@ def take_order():
         print("No items available. Please add items first.\n")
         return
     
-    # It asks for student name
-    student_name = input("Enter Student Name: ").strip().title()     
+    student_name = input("Enter Student Name: ").strip().title()
+    if student_name == "":
+        student_name = "Unknown"
 
     order = []
     total = 0
@@ -50,7 +83,7 @@ def take_order():
         if item.lower() == "done":
             break
         if item in menu:
-            qty = int(input(f"Enter quantity of {item}: "))
+            qty = get_valid_int(f"Enter quantity of {item}: ")
             cost = menu[item] * qty
             order.append({"item": item, "qty": qty, "cost": cost})
             total += cost
@@ -61,7 +94,6 @@ def take_order():
         orders = load_file(ORDERS_FILE)
         if not isinstance(orders, list):  # initialize if empty
             orders = []
-        #Saves student name with order
         orders.append({"student": student_name, "order": order, "total": total})
         save_file(ORDERS_FILE, orders)
         print(f"\n✅ Order Placed for {student_name}! Total Bill: ₹{total}\n")
