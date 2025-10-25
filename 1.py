@@ -65,6 +65,30 @@ def view_menu():
             print(f"{item}: ₹{price}")
         print()
 
+def remove_or_update_item():
+    menu = load_file(MENU_FILE)
+    if not menu:
+        print("Menu is empty!\n")
+        return
+
+    view_menu()
+    choice = input("Enter item name to remove/update: ").capitalize()
+    if choice in menu:
+        action = input("Type 'remove' to delete or 'update' to change price: ").lower()
+        if action == "remove":
+            menu.pop(choice)
+            save_file(MENU_FILE, menu)
+            print(f"✅ {choice} removed successfully.\n")
+        elif action == "update":
+            new_price = get_valid_float(f"Enter new price for {choice}: ₹")
+            menu[choice] = new_price
+            save_file(MENU_FILE, menu)
+            print(f"✅ {choice} updated successfully.\n")
+        else:
+            print("❌ Invalid action.\n")
+    else:
+        print("❌ Item not found.\n")
+
 def take_order():
     menu = load_file(MENU_FILE)
     if not menu:
